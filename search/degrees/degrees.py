@@ -91,9 +91,75 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    
+    """
+    Frontier: Quaue of nodes (state=person_id, parent = previous node / None, action= (movie_id, person_id))
+    Explored: Set of person_ids to check in case already explored
+    0- Create initial node 
+    1- Init frontier with source node
+    2- Init explored set as empty
+    3- Loop while frontier not empty
+        a- Remove node from frontier
+        b- If node state is target, then we found the path, reconstruct and return
+        c- Add node state to explored
+    """
+    
+    #If source and target are equals (same person), return empty path
+    if source == target:
+        return []
 
-    # TODO
-    raise NotImplementedError
+    #Use QueueFrontier for BFS search
+    frontier = QueueFrontier()
+    # Init collection of explored persons (state)
+    explored_persons = set()
+
+    #Start node and add to frontier
+    first_node = Node(state=source, parent=None, action=None)
+    frontier.add(first_node)
+
+    while not frontier.empty():
+        
+        # Remove a node from the frontier
+        current_node = frontier.remove()
+        
+        #Add current_node.state to explored_persons
+        explored_persons.add(current_node.state)
+        
+        #Get neighbors 
+        neighbors = neighbors_for_person(current_node.state)
+        
+        for movie_id, person_id in neighbors:
+            #If person in explored_persons continue
+            if person_id in explored_persons:
+                continue
+            
+            #If node is in frontier
+            if frontier.contains_state(person_id):
+                continue
+            
+            #Create new node
+            new_node = Node(
+                state=person_id,
+                parent=current_node,
+                action=(movie_id,person_id)
+            )
+            
+            #Check if we reached the target
+            if person_id == target:
+                path = []
+                goal_node = new_node
+                while goal_node.parent is not None:
+                    path.append(goal_node.action)
+                    goal_node = goal_node.parent
+                path.reverse()
+                return path
+            
+            #Add new node to frontier
+            frontier.add(new_node)
+        
+    #Return None, no path found
+    return None
+            
 
 
 def person_id_for_name(name):
