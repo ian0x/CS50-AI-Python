@@ -68,6 +68,11 @@ def result(board, action):
     """
     
     i,j = action
+    
+    #Check if action is valid for the board
+    if i < 0 or i > 2 or j < 0 or j > 2:
+        raise Exception("Action is out of board range.")
+    
     #Check if move is invalid, cell should be EMPTY
     if board[i][j] != EMPTY:
         raise Exception("Invalid action for the board.")
